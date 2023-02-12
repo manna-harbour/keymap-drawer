@@ -85,7 +85,15 @@ class KeymapDrawer:
         if r != 0:
             self.out.write(f'<g transform="rotate({r}, {p.x}, {p.y})">\n')
         self._draw_rect(p, w - 2 * self.cfg.inner_pad_w, h - 2 * self.cfg.inner_pad_h, l_key.type)
-        self._draw_text(p, l_key.tap, split=True)
+        offset_point = Point(0, 0)
+        if (True):
+            if (len([word.replace("\x00", " ") for word in l_key.tap.replace("  ", "\x00").split()]) == 2):
+                offset_height = h / 3 - self.cfg.line_spacing / 2
+                if (l_key.shifted and not l_key.hold):
+                    offset_point = Point(0, offset_height)
+                elif (l_key.hold and not l_key.shifted):
+                    offset_point = Point(0, -offset_height)
+        self._draw_text(p + offset_point, l_key.tap, split=True)
         self._draw_text(p + Point(0, h / 2 - self.cfg.line_spacing / 2), l_key.hold, cls="small")
         self._draw_text(p - Point(0, h / 2 - self.cfg.line_spacing / 2), l_key.shifted, cls="small")
         if r != 0:
