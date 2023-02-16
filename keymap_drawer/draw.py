@@ -35,7 +35,7 @@ class KeymapDrawer:
             f'width="{w}" height="{h}"{class_str}/>\n'
         )
 
-    def _draw_text(self, p: Point, words: Sequence[str], cls: str | None = None) -> None:
+    def _draw_text(self, p: Point, words: Sequence[str], cls: str | None = None, shift: float = 0) -> None:
         if not words or not words[0]:
             return
 
@@ -44,9 +44,10 @@ class KeymapDrawer:
             self.out.write(f'<text x="{p.x}" y="{p.y}"{class_str}>{escape(words[0])}</text>\n')
             return
         self.out.write(f'<text x="{p.x}" y="{p.y}"{class_str}>\n')
-        self.out.write(f'<tspan x="{p.x}" dy="-{(len(words) - 1) * 0.6}em">{escape(words[0])}</tspan>')
+        main_line_spacing = 1.2
+        self.out.write(f'<tspan x="{p.x}" dy="-{(len(words) - 1) * (main_line_spacing * (1 + shift) / 2)}em">{escape(words[0])}</tspan>')
         for word in words[1:]:
-            self.out.write(f'<tspan x="{p.x}" dy="1.2em">{escape(word)}</tspan>')
+            self.out.write(f'<tspan x="{p.x}" dy="{main_line_spacing}em">{escape(word)}</tspan>')
         self.out.write("</text>\n")
 
     def _draw_arc_dendron(self, p_1: Point, p_2: Point, x_first: bool, shorten: float) -> None:
@@ -92,12 +93,13 @@ class KeymapDrawer:
 
         # auto-adjust vertical alignment up/down if there are two lines and either hold/shifted is present
         tap_p = Point(p.x, p.y)
+        shift = 0
         if len(tap_words) == 2:
             if l_key.shifted and not l_key.hold:  # shift down
-                tap_p.y += h / 3 - self.cfg.line_spacing / 2
+                shift = -1
             elif l_key.hold and not l_key.shifted:  # shift up
-                tap_p.y -= h / 3 - self.cfg.line_spacing / 2
-        self._draw_text(tap_p, tap_words)
+                shift = 1
+        self._draw_text(tap_p, tap_words, cls="main", shift=shift)
 
         self._draw_text(p + Point(0, h / 2 - self.cfg.line_spacing / 2), [l_key.hold], cls="small")
         self._draw_text(p - Point(0, h / 2 - self.cfg.line_spacing / 2), [l_key.shifted], cls="small")
