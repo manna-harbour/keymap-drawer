@@ -36,8 +36,8 @@ class DrawConfig(BaseSettings):
     outer_pad_w: float = key_w / 2
     outer_pad_h: float = key_h
 
-    # spacing between multi-line text in key labels
-    line_spacing: float = 18
+    # spacing between multi-line text in key labels in units of em
+    line_spacing: float = 1.2
 
     # curve radius for combo dendrons
     arc_radius: float = 6
@@ -67,17 +67,17 @@ class DrawConfig(BaseSettings):
         }
 
         /* color accent for held keys */
-        .held {
+        rect.held {
             fill: #fdd;
         }
 
         /* color accent for combo boxes */
-        .combo {
+        rect.combo {
             fill: #cdf;
         }
 
         /* color accent for ghost (optional) keys */
-        .ghost {
+        rect.ghost {
             fill: #ddd;
         }
 
@@ -87,7 +87,7 @@ class DrawConfig(BaseSettings):
         }
 
         /* styling for layer labels */
-        .label {
+        text.label {
             font-weight: bold;
             text-anchor: start;
             stroke: white;
@@ -95,13 +95,23 @@ class DrawConfig(BaseSettings):
             paint-order: stroke;
         }
 
-        /* styling for combo box and hold-tap hold label text */
-        .small {
+        /* styling for combo tap, and key hold/shifted label text */
+        text.combo, text.hold, text.shifted {
             font-size: 11px;
         }
 
-        /* styling for hold-tap hold label text in combo box */
-        .smaller {
+        text.hold {
+            text-anchor: middle;
+            dominant-baseline: auto;
+        }
+
+        text.shifted {
+            text-anchor: middle;
+            dominant-baseline: hanging;
+        }
+
+        /* styling for hold/shifted label text in combo box */
+        text.combo.hold, text.combo.shifted {
             font-size: 8px;
         }
 
@@ -111,7 +121,7 @@ class DrawConfig(BaseSettings):
             stroke: gray;
             fill: none;
         }
-    """
+        """
     )
 
 

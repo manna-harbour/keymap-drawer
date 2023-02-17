@@ -44,10 +44,10 @@ class KeymapDrawer:
             self.out.write(f'<text x="{p.x}" y="{p.y}"{class_str}>{escape(words[0])}</text>\n')
             return
         self.out.write(f'<text x="{p.x}" y="{p.y}"{class_str}>\n')
-        main_line_spacing = 1.2
-        self.out.write(f'<tspan x="{p.x}" dy="-{(len(words) - 1) * (main_line_spacing * (1 + shift) / 2)}em">{escape(words[0])}</tspan>')
+        dy_0 = (len(words) - 1) * (self.cfg.line_spacing * (1 + shift) / 2)
+        self.out.write(f'<tspan x="{p.x}" dy="-{dy_0}em">{escape(words[0])}</tspan>')
         for word in words[1:]:
-            self.out.write(f'<tspan x="{p.x}" dy="{main_line_spacing}em">{escape(word)}</tspan>')
+            self.out.write(f'<tspan x="{p.x}" dy="{self.cfg.line_spacing}em">{escape(word)}</tspan>')
         self.out.write("</text>\n")
 
     def _draw_arc_dendron(self, p_1: Point, p_2: Point, x_first: bool, shorten: float) -> None:
@@ -101,8 +101,8 @@ class KeymapDrawer:
                 shift = 1
         self._draw_text(tap_p, tap_words, cls="main", shift=shift)
 
-        self._draw_text(p + Point(0, h / 2 - self.cfg.line_spacing / 2), [l_key.hold], cls="small")
-        self._draw_text(p - Point(0, h / 2 - self.cfg.line_spacing / 2), [l_key.shifted], cls="small")
+        self._draw_text(p + Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.hold], cls="hold")
+        self._draw_text(p - Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.shifted], cls="shifted")
         if r != 0:
             self.out.write("</g>\n")
 
@@ -157,10 +157,9 @@ class KeymapDrawer:
 
         # draw combo box with text
         self._draw_rect(p_mid, self.cfg.combo_w, self.cfg.combo_h, cls="combo")
-        self._draw_text(p_mid, self._split_text(combo_spec.key.tap), cls="small")
-        self._draw_text(
-            p_mid + Point(0, self.cfg.combo_h / 2 - self.cfg.line_spacing / 5), [combo_spec.key.hold], cls="smaller"
-        )
+        self._draw_text(p_mid, self._split_text(combo_spec.key.tap), cls="combo")
+        self._draw_text(p_mid + Point(0, self.cfg.combo_h / 2 - 1), [combo_spec.key.hold], cls="combo hold")
+        self._draw_text(p_mid - Point(0, self.cfg.combo_h / 2 - 1), [combo_spec.key.shifted], cls="combo shifted")
 
     def print_layer(
         self, p_0: Point, layer_keys: Sequence[LayoutKey], combos: Sequence[ComboSpec], empty_layer: bool = False
