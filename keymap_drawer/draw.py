@@ -28,18 +28,18 @@ class KeymapDrawer:
         # do not split on double spaces, but do split on single
         return [word.replace("\x00", " ") for word in text.replace("  ", "\x00").split()]
 
-    def _draw_rect(self, p: Point, w: float, h: float, cls: str | None = None) -> None:
-        class_str = f' class="{cls}"' if cls is not None else ""
+    def _draw_rect(self, p: Point, w: float, h: float, cls: Sequence[str]) -> None:
+        class_str = (' class="' + " ".join(c for c in cls if c) + '"') if cls else ""
         self.out.write(
             f'<rect rx="{self.cfg.key_rx}" ry="{self.cfg.key_ry}" x="{p.x - w / 2}" y="{p.y - h / 2}" '
             f'width="{w}" height="{h}"{class_str}/>\n'
         )
 
-    def _draw_text(self, p: Point, words: Sequence[str], cls: str | None = None, shift: float = 0) -> None:
+    def _draw_text(self, p: Point, words: Sequence[str], cls: Sequence[str], shift: float = 0) -> None:
         if not words or not words[0]:
             return
 
-        class_str = f' class="{cls}"' if cls is not None else ""
+        class_str = (' class="' + " ".join(c for c in cls if c) + '"') if cls else ""
         if len(words) == 1:
             self.out.write(f'<text x="{p.x}" y="{p.y}"{class_str}>{escape(words[0])}</text>\n')
             return
@@ -87,7 +87,7 @@ class KeymapDrawer:
         )
         if r != 0:
             self.out.write(f'<g transform="rotate({r}, {p.x}, {p.y})">\n')
-        self._draw_rect(p, w - 2 * self.cfg.inner_pad_w, h - 2 * self.cfg.inner_pad_h, l_key.type)
+        self._draw_rect(p, w - 2 * self.cfg.inner_pad_w, h - 2 * self.cfg.inner_pad_h, cls=["main", l_key.type])
 
         tap_words = self._split_text(l_key.tap)
 
@@ -99,10 +99,10 @@ class KeymapDrawer:
                 shift = -1
             elif l_key.hold and not l_key.shifted:  # shift up
                 shift = 1
-        self._draw_text(tap_p, tap_words, cls="main", shift=shift)
+        self._draw_text(tap_p, tap_words, cls=["main"], shift=shift)
 
-        self._draw_text(p + Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.hold], cls="hold")
-        self._draw_text(p - Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.shifted], cls="shifted")
+        self._draw_text(p + Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.hold], cls=["main", "hold"])
+        self._draw_text(p - Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.shifted], cls=["main", "shifted"])
         if r != 0:
             self.out.write("</g>\n")
 
@@ -156,10 +156,14 @@ class KeymapDrawer:
                             self._draw_line_dendron(p_mid, p_0 + k.pos, k.width / 3)
 
         # draw combo box with text
-        self._draw_rect(p_mid, self.cfg.combo_w, self.cfg.combo_h, cls="combo")
-        self._draw_text(p_mid, self._split_text(combo_spec.key.tap), cls="combo")
-        self._draw_text(p_mid + Point(0, self.cfg.combo_h / 2 - 1), [combo_spec.key.hold], cls="combo hold")
-        self._draw_text(p_mid - Point(0, self.cfg.combo_h / 2 - 1), [combo_spec.key.shifted], cls="combo shifted")
+        self._draw_rect(p_mid, self.cfg.combo_w, self.cfg.combo_h, cls=[combo_spec.type])
+        self._draw_text(p_mid, self._split_text(combo_spec.key.tap), cls=[combo_spec.type])
+        self._draw_text(
+            p_mid + Point(0, self.cfg.combo_h / 2 - 1), [combo_spec.key.hold], cls=[combo_spec.type, "hold"]
+        )
+        self._draw_text(
+            p_mid - Point(0, self.cfg.combo_h / 2 - 1), [combo_spec.key.shifted], cls=[combo_spec.type, "shifted"]
+        )
 
     def print_layer(
         self, p_0: Point, layer_keys: Sequence[LayoutKey], combos: Sequence[ComboSpec], empty_layer: bool = False
@@ -211,7 +215,7 @@ class KeymapDrawer:
             layer_header = name
             if self.cfg.append_colon_to_layer_header:
                 layer_header += ":"
-            self._draw_text(p + Point(0, self.cfg.outer_pad_h / 2), [layer_header], cls="label")
+            self._draw_text(p + Point(0, self.cfg.outer_pad_h / 2), [layer_header], cls=["label"])
 
             # get offsets added by combo alignments
             combo_offset_top, combo_offset_bot = offsets_per_layer[name]

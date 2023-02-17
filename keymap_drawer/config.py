@@ -66,18 +66,18 @@ class DrawConfig(BaseSettings):
             stroke-width: 1;
         }
 
-        /* color accent for held keys */
-        rect.held {
-            fill: #fdd;
-        }
-
         /* color accent for combo boxes */
         rect.combo {
             fill: #cdf;
         }
 
+        /* color accent for held keys */
+        rect.held, rect.combo.held {
+            fill: #fdd;
+        }
+
         /* color accent for ghost (optional) keys */
-        rect.ghost {
+        rect.ghost, rect.combo.ghost {
             fill: #ddd;
         }
 
