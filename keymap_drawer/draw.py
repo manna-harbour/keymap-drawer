@@ -101,8 +101,8 @@ class KeymapDrawer:
                 shift = 1
         self._draw_text(tap_p, tap_words, cls=["main"], shift=shift)
 
-        self._draw_text(p + Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.hold], cls=["hold"])
-        self._draw_text(p - Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.shifted], cls=["shifted"])
+        self._draw_text(p + Point(0, h / 2 - self.cfg.inner_pad_h - self.cfg.small_pad), [l_key.hold], cls=["hold"])
+        self._draw_text(p - Point(0, h / 2 - self.cfg.inner_pad_h - self.cfg.small_pad), [l_key.shifted], cls=["shifted"])
         if r != 0:
             self.out.write("</g>\n")
 
