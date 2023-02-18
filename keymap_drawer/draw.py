@@ -87,7 +87,7 @@ class KeymapDrawer:
         )
         if r != 0:
             self.out.write(f'<g transform="rotate({r}, {p.x}, {p.y})">\n')
-        self._draw_rect(p, w - 2 * self.cfg.inner_pad_w, h - 2 * self.cfg.inner_pad_h, cls=["main", l_key.type])
+        self._draw_rect(p, w - 2 * self.cfg.inner_pad_w, h - 2 * self.cfg.inner_pad_h, cls=[l_key.type])
 
         tap_words = self._split_text(l_key.tap)
 
@@ -101,8 +101,8 @@ class KeymapDrawer:
                 shift = 1
         self._draw_text(tap_p, tap_words, cls=["main"], shift=shift)
 
-        self._draw_text(p + Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.hold], cls=["main", "hold"])
-        self._draw_text(p - Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.shifted], cls=["main", "shifted"])
+        self._draw_text(p + Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.hold], cls=["hold"])
+        self._draw_text(p - Point(0, h / 2 - self.cfg.inner_pad_h - 2), [l_key.shifted], cls=["shifted"])
         if r != 0:
             self.out.write("</g>\n")
 
